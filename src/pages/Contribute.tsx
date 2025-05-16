@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle, AlertCircle, BarChart3, Code2, Upload, ExternalLink } from 'lucide-react';
+import { CheckCircle, AlertCircle, BarChart3, Code2, Upload, ExternalLink, Sun, Moon, Star, Download } from 'lucide-react';
 
 interface Agent {
   id: number;
@@ -10,14 +10,20 @@ interface Agent {
   rating: number;
   description: string;
   tasks: string[];
+  executionMethod: string;
+  callbackStructure: string;
 }
 
 export function Contribute() {
   const [agentName, setAgentName] = useState('');
   const [description, setDescription] = useState('');
   const [tasks, setTasks] = useState('');
+  const [executionMethod, setExecutionMethod] = useState('');
+  const [callbackStructure, setCallbackStructure] = useState('');
   const [permissions, setPermissions] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
   
   // Mock submitted agents
   const submittedAgents: Agent[] = [
@@ -29,7 +35,9 @@ export function Contribute() {
       usageCount: 1243,
       rating: 4.8,
       description: 'Handles email composition and scheduling',
-      tasks: ['Send email', 'Schedule email', 'Draft reply']
+      tasks: ['Send email', 'Schedule email', 'Draft reply'],
+      executionMethod: 'REST API',
+      callbackStructure: 'JSON'
     },
     {
       id: 2,
@@ -39,9 +47,16 @@ export function Contribute() {
       usageCount: 0,
       rating: 0,
       description: 'Books flights and plans itineraries',
-      tasks: ['Book flight', 'Find hotels', 'Create itinerary']
+      tasks: ['Book flight', 'Find hotels', 'Create itinerary'],
+      executionMethod: 'GraphQL',
+      callbackStructure: 'JSON'
     }
   ];
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.documentElement.classList.toggle('dark');
+  };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,17 +65,80 @@ export function Contribute() {
       setAgentName('');
       setDescription('');
       setTasks('');
+      setExecutionMethod('');
+      setCallbackStructure('');
       setPermissions([]);
       setSubmitted(false);
+      setPreviewMode(false);
     }, 3000);
   };
+
+  const AgentPreview = () => (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="p-5">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center">
+            <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-md mr-3">
+              <Code2 className="h-5 w-5 text-blue-500" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">{agentName || 'Agent Name'}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">by You</p>
+            </div>
+          </div>
+          <div className="flex items-center">
+            <Star className="h-4 w-4 text-yellow-400 mr-1" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">New</span>
+          </div>
+        </div>
+        
+        <p className="mt-3 text-gray-600 dark:text-gray-300 text-sm">
+          {description || 'Agent description will appear here'}
+        </p>
+        
+        <div className="mt-4">
+          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+            Supported Tasks
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {(tasks ? tasks.split(',') : ['Example Task 1', 'Example Task 2']).map((task, index) => (
+              <span 
+                key={index} 
+                className="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-md"
+              >
+                {task.trim()}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-gray-50 dark:bg-gray-750 px-5 py-3 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
+        <div className="text-sm text-gray-500 dark:text-gray-400">
+          Preview Mode
+        </div>
+        <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-medium flex items-center transition-colors">
+          <Download className="h-4 w-4 mr-1" />
+          Install
+        </button>
+      </div>
+    </div>
+  );
   
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 ${darkMode ? 'dark' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-normal text-gray-900 dark:text-white">Agent Development</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Create and manage your AI agents</p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-normal text-gray-900 dark:text-white">Agent Development</h1>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Create and manage your AI agents</p>
+          </div>
+          <button
+            onClick={toggleDarkMode}
+            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          >
+            {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          </button>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -168,13 +246,45 @@ export function Contribute() {
                       required
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Execution Method
+                    </label>
+                    <select
+                      value={executionMethod}
+                      onChange={(e) => setExecutionMethod(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    >
+                      <option value="">Select execution method</option>
+                      <option value="REST">REST API</option>
+                      <option value="GraphQL">GraphQL</option>
+                      <option value="WebSocket">WebSocket</option>
+                      <option value="gRPC">gRPC</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Callback Structure
+                    </label>
+                    <textarea
+                      value={callbackStructure}
+                      onChange={(e) => setCallbackStructure(e.target.value)}
+                      className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      rows={4}
+                      placeholder="Describe your callback structure (JSON schema, GraphQL type, etc.)"
+                      required
+                    />
+                  </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Required Permissions
                     </label>
                     <div className="space-y-2">
-                      {['Calendar Access', 'Email Access', 'File System', 'Network'].map((perm) => (
+                      {['Calendar Access', 'Email Access', 'File System', 'Network', 'Database', 'External APIs'].map((perm) => (
                         <label key={perm} className="flex items-center">
                           <input
                             type="checkbox"
@@ -213,19 +323,29 @@ export function Contribute() {
                   </div>
                   
                   <div className="flex items-center justify-between pt-6">
-                    <button
-                      type="submit"
-                      className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                    >
-                      Submit Agent
-                    </button>
-                    <button
-                      type="button"
-                      className="px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                    >
-                      Preview
-                    </button>
+                    <div className="flex space-x-4">
+                      <button
+                        type="submit"
+                        className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      >
+                        Submit Agent
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPreviewMode(!previewMode)}
+                        className="px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                      >
+                        {previewMode ? 'Hide Preview' : 'Preview'}
+                      </button>
+                    </div>
                   </div>
+
+                  {previewMode && (
+                    <div className="mt-8">
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Preview</h3>
+                      <AgentPreview />
+                    </div>
+                  )}
                 </form>
               )}
             </div>
