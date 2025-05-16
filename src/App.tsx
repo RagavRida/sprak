@@ -13,7 +13,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="store" element={<AgentStore />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="contribute" element={<AgentStore />} />
+        <Route path="contribute" element={<Contribute />} />
       </Route>
     </Routes>
   );
