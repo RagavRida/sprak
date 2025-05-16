@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Search, Zap, Package, User, Code, Menu, X, Moon, Sun } from 'lucide-react';
 
 export function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Check if user previously set dark mode
+    const savedMode = localStorage.getItem('darkMode');
+    return savedMode ? JSON.parse(savedMode) : false;
+  });
   const location = useLocation();
+  
+  useEffect(() => {
+    // Update dark mode class and save preference
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
   
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
-    document.documentElement.classList.toggle('dark');
   };
   
   const navItems = [
