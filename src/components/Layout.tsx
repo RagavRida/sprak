@@ -5,14 +5,12 @@ import { Search, Zap, Package, User, Code, Menu, X, Moon, Sun } from 'lucide-rea
 export function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
-    // Check if user previously set dark mode
     const savedMode = localStorage.getItem('darkMode');
     return savedMode ? JSON.parse(savedMode) : false;
   });
   const location = useLocation();
   
   useEffect(() => {
-    // Update dark mode class and save preference
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -26,15 +24,15 @@ export function Layout() {
   };
   
   const navItems = [
-    { path: '/', label: 'Home', icon: <Search className="h-5 w-5" /> },
-    { path: '/store', label: 'Agent Store', icon: <Package className="h-5 w-5" /> },
+    { path: '/', label: 'Search', icon: <Search className="h-5 w-5" /> },
+    { path: '/store', label: 'Store', icon: <Package className="h-5 w-5" /> },
     { path: '/profile', label: 'Profile', icon: <User className="h-5 w-5" /> },
     { path: '/contribute', label: 'Contribute', icon: <Code className="h-5 w-5" /> },
   ];
   
   return (
     <div className={darkMode ? 'dark' : ''}>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-white">
+      <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* Mobile navigation */}
         <nav className="bg-white dark:bg-gray-800 shadow-sm px-4 py-3 flex justify-between items-center md:hidden">
           <div className="flex items-center">
@@ -57,7 +55,7 @@ export function Layout() {
         {isMenuOpen && (
           <div className="fixed inset-0 z-50 md:hidden bg-white dark:bg-gray-800">
             <div className="flex flex-col h-full">
-              <div className="flex justify-between items-center px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex justify-between items-center px-4 py-3">
                 <div className="flex items-center">
                   <Zap className="h-6 w-6 text-blue-500" />
                   <span className="ml-2 font-bold text-xl">Spark</span>
@@ -72,23 +70,23 @@ export function Layout() {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center px-4 py-3 ${
+                    className={`flex items-center px-6 py-3 ${
                       location.pathname === item.path
-                        ? 'bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-blue-400'
-                        : 'text-gray-600 dark:text-gray-300'
+                        ? 'bg-gray-100 dark:bg-gray-750 text-blue-600'
+                        : 'text-gray-700 dark:text-gray-300'
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.icon}
-                    <span className="ml-3">{item.label}</span>
+                    <span className="ml-4">{item.label}</span>
                   </Link>
                 ))}
               </div>
               
-              <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+              <div className="p-4">
                 <button
                   onClick={toggleDarkMode}
-                  className="flex items-center w-full px-4 py-2 text-left text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                  className="flex items-center w-full px-4 py-2 text-gray-700 dark:text-gray-300"
                 >
                   {darkMode ? (
                     <Sun className="h-5 w-5 mr-3" />
@@ -103,52 +101,57 @@ export function Layout() {
         )}
         
         {/* Desktop sidebar */}
-        <div className="hidden md:flex md:flex-col md:w-64 md:fixed md:inset-y-0 bg-white dark:bg-gray-800 shadow-md z-10">
-          <div className="flex flex-col h-full">
-            <div className="flex items-center h-16 px-6 border-b border-gray-200 dark:border-gray-700">
-              <Link to="/" className="flex items-center">
-                <Zap className="h-6 w-6 text-blue-500" />
-                <span className="ml-2 font-bold text-xl">Spark</span>
+        <div className="hidden md:flex">
+          <div className="fixed top-0 left-0 h-full w-16 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col h-full">
+              <Link to="/" className="flex justify-center py-4">
+                <Zap className="h-8 w-8 text-blue-500" />
               </Link>
-            </div>
-            
-            <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-              <nav className="px-3 mt-6 space-y-3">
+              
+              <nav className="flex-1 flex flex-col items-center pt-8 space-y-8">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+                    className={`p-2 rounded-lg transition-colors group relative ${
                       location.pathname === item.path
-                        ? 'bg-blue-50 text-blue-600 dark:bg-gray-700 dark:text-blue-400'
-                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        ? 'text-blue-600 bg-blue-50 dark:bg-gray-700'
+                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     {item.icon}
-                    <span className="ml-3">{item.label}</span>
+                    <span className="absolute left-14 bg-gray-900 dark:bg-gray-700 text-white px-2 py-1 rounded text-sm opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                      {item.label}
+                    </span>
                   </Link>
                 ))}
               </nav>
+              
+              <div className="py-4 flex justify-center">
+                <button
+                  onClick={toggleDarkMode}
+                  className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  {darkMode ? (
+                    <Sun className="h-5 w-5" />
+                  ) : (
+                    <Moon className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
-            
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-              <button
-                onClick={toggleDarkMode}
-                className="flex items-center w-full px-4 py-2 text-left text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                {darkMode ? (
-                  <Sun className="h-5 w-5 mr-3" />
-                ) : (
-                  <Moon className="h-5 w-5 mr-3" />
-                )}
-                {darkMode ? 'Light Mode' : 'Dark Mode'}
-              </button>
-            </div>
+          </div>
+          
+          {/* Main content */}
+          <div className="flex-1 ml-16">
+            <main className="min-h-screen">
+              <Outlet />
+            </main>
           </div>
         </div>
         
-        {/* Main content */}
-        <div className="md:pl-64">
+        {/* Mobile main content */}
+        <div className="md:hidden">
           <main className="min-h-screen">
             <Outlet />
           </main>
