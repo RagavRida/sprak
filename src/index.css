@@ -1,3 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --transition-duration: 200ms;
+}
+
+body {
+  transition: background-color var(--transition-duration) ease-in-out;
+}
+
+.dark body {
+  background-color: #1a1a1a;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: ease-in-out;
+  transition-duration: var(--transition-duration);
+}
